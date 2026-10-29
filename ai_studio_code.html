@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Dino Speller - Kids Spelling Adventure</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#4ADE80" />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-color: #E0F2FE;
+      --card-bg: #FFFFFF;
+      --primary: #10B981;
+      --primary-dark: #059669;
+      --accent: #F59E0B;
+      --danger: #EF4444;
+      --text: #1E293B;
+      --board-bg: #F8FAFC;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      font-family: 'Quicksand', sans-serif;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    /* Top Bar */
+    header {
+      width: 100%;
+      max-width: 950px;
+      padding: 10px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge {
+      background: var(--card-bg);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Container */
+    .game-layout {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      max-width: 950px;
+      width: 100%;
+      padding: 10px 20px;
+      align-items: flex-start;
+      justify-content: center;
+    }
+
+    /* Side Preview Card */
+    .side-card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      padding: 20px;
+      width: 240px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+      border: 4px solid #BAE6FD;
+    }
+
+    .image-frame {
+      width: 130px;
+      height: 130px;
+      border-radius: 20px;
+      background: #FEF3C7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      margin-bottom: 12px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+      animation: bounce 2s infinite ease-in-out;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .hint-label {
+      font-size: 0.9rem;
+      color: #64748B;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .speak-btn {
+      margin-top: 10px;
+      background: #38BDF8;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: transform 0.1s;
+    }
+    .speak-btn:active { transform: scale(0.95); }
+
+    /* Arena & Word Display */
+    .play-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .word-slots {
+      display: flex;
+      gap: 10px;
+    }
+
+    .letter-slot {
+      width: 50px;
+      height: 55px;
+      background: white;
+      border: 3px dashed #CBD5E1;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem;
+      color: var(--primary-dark);
+      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .letter-slot.filled {
+      border-style: solid;
+      border-color: var(--primary);
+      background: #D1FAE5;
+      transform: scale(1.08);
+    }
+
+    /* Canvas Board */
+    #board-container {
+      position: relative;
+    }
+
+    canvas {
+      background: var(--board-bg);
+      border-radius: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      border: 6px solid #FFFFFF;
+      display: block;
+    }
+
+    /* Mobile Controls */
+    .d-pad {
+      display: none;
+      grid-template-columns: repeat(3, 56px);
+      grid-gap: 8px;
+      margin: 15px auto;
+    }
+
+    .d-btn {
+      width: 56px;
+      height: 56px;
+      background: white;
+      border: 2px solid #CBD5E1;
+      border-radius: 16px;
+      font-size: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+    }
+    .d-btn:active { background: #E2E8F0; }
+
+    /* Modal / Overlay */
+    .overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px);
+      border-radius: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      z-index: 10;
+    }
+
+    .overlay h2 {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .btn-action {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      font-size: 1.2rem;
+      border-radius: 999px;
+      font-family: 'Fredoka One', cursive;
+      cursor: pointer;
+      margin-top: 15px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+
+    @media (max-width: 800px) {
+      .game-layout {
+        flex-direction: column;
+        align-items: center;
+      }
+      .side-card {
+        width: 100%;
+        max-width: 440px;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 12px;
+      }
+      .image-frame {
+        width: 70px;
+        height: 70px;
+        font-size: 2.8rem;
+        margin-bottom: 0;
+      }
+      .d-pad {
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge" style="color: #0284C7;">
+      🦖 Level: <span id="level-display">1</span>/50
+    </div>
+    <div class="badge" style="color: #E11D48;">
+      ❤️ Lives: <span id="lives-display">3</span>
+    </div>
+    <div class="badge" style="color: #D97706;">
+      ⭐ Stars: <span id="score-display">0</span>
+    </div>
+  </header>
+
+  <div class="game-layout">
+    <!-- Side Preview Card -->
+    <div class="side-card">
+      <div class="image-frame" id="word-image">🐱</div>
+      <div>
+        <div class="hint-label">Spell This Word</div>
+        <button class="speak-btn" onclick="speakCurrentWord()">
+          🔊 Hear Word
+        </button>
+      </div>
+    </div>
+
+    <!-- Gameplay Area -->
+    <div class="play-area">
+      <div class="word-slots" id="slots-container"></div>
+      
+      <div id="board-container">
+        <canvas id="gameCanvas" width="440" height="440"></canvas>
+        <div id="overlay" class="overlay" style="display: none;">
+          <h2 id="overlay-title">Awesome! 🎉</h2>
+          <p id="overlay-msg">Word Completed!</p>
+          <button class="btn-action" id="overlay-btn" onclick="handleOverlayAction()">Next Word ➔</button>
+        </div>
+      </div>
+
+      <!-- Touch D-Pad for Mobile Devices -->
+      <div class="d-pad">
+        <div></div>
+        <button class="d-btn" onclick="sendInput('UP')">⬆️</button>
+        <div></div>
+        <button class="d-btn" onclick="sendInput('LEFT')">⬅️</button>
+        <button class="d-btn" onclick="sendInput('DOWN')">⬇️</button>
+        <button class="d-btn" onclick="sendInput('RIGHT')">➡️</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ========================================================
+       LEVEL DATABASE (50 Curated Words with Emojis)
+       Level 1-15:  3 letters
+       Level 16-30: 4 letters
+       Level 31-50: 5 letters
+    ======================================================== */
+    const WORD_LEVELS = [
+      // 1-15 (3 Letters)
+      { word: "CAT", icon: "🐱" }, { word: "DOG", icon: "🐶" }, { word: "SUN", icon: "☀️" },
+      { word: "BUS", icon: "🚌" }, { word: "PIG", icon: "🐷" }, { word: "CUP", icon: "☕" },
+      { word: "HAT", icon: "👒" }, { word: "FOX", icon: "🦊" }, { word: "BAT", icon: "🦇" },
+      { word: "BUG", icon: "🐛" }, { word: "CAR", icon: "🚗" }, { word: "HEN", icon: "🐔" },
+      { word: "OWL", icon: "🦉" }, { word: "COW", icon: "🐮" }, { word: "BEE", icon: "🐝" },
+      // 16-30 (4 Letters)
+      { word: "DUCK", icon: "🦆" }, { word: "FROG", icon: "🐸" }, { word: "FISH", icon: "🐟" },
+      { word: "LION", icon: "🦁" }, { word: "BIRD", icon: "🐦" }, { word: "STAR", icon: "⭐" },
+      { word: "CAKE", icon: "🎂" }, { word: "TREE", icon: "🌳" }, { word: "MOON", icon: "🌙" },
+      { word: "BEAR", icon: "🐻" }, { word: "BOAT", icon: "⛵" }, { word: "BALL", icon: "⚽" },
+      { word: "BOOK", icon: "📖" }, { word: "MILK", icon: "🥛" }, { word: "RING", icon: "💍" },
+      // 31-50 (5 Letters)
+      { word: "APPLE", icon: "🍎" }, { word: "TIGER", icon: "🐯" }, { word: "ZEBRA", icon: "🦓" },
+      { word: "HORSE", icon: "🐴" }, { word: "TRAIN", icon: "🚆" }, { word: "HOUSE", icon: "🏠" },
+      { word: "CLOUD", icon: "☁️" }, { word: "ROBOT", icon: "🤖" }, { word: "PIZZA", icon: "🍕" },
+      { word: "CHAIR", icon: "🪑" }, { word: "WATER", icon: "💧" }, { word: "CANDY", icon: "🍬" },
+      { word: "SHARK", icon: "🦈" }, { word: "SHEEP", icon: "🐑" }, { word: "PANDA", icon: "🐼" },
+      { word: "LEMON", icon: "🍋" }, { word: "GRAPE", icon: "🍇" }, { word: "HEART", icon: "❤️" },
+      { word: "SMILE", icon: "😊" }, { word: "CLOCK", icon: "⏰" }
+    ];
+
+    /* Sound Synthesizer via Web Audio API */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq, type = 'sine', duration = 0.15) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function soundEat() { playBeep(587.33, 'triangle', 0.1); } // Friendly bite
+    function soundCorrect() {
+      playBeep(523.25, 'sine', 0.1);
+      setTimeout(() => playBeep(659.25, 'sine', 0.2), 100);
+    }
+    function soundWrong() { playBeep(180, 'sawtooth', 0.3); }
+
+    function speakCurrentWord() {
+      const item = WORD_LEVELS[currentLevel - 1];
+      const utter = new SpeechSynthesisUtterance(item.word);
+      utter.rate = 0.85;
+      utter.pitch = 1.1;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function speakLetter(letter) {
+      const utter = new SpeechSynthesisUtterance(letter);
+      utter.rate = 1.0;
+      window.speechSynthesis.speak(utter);
+    }
+
+    /* Grid & Canvas Config */
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const GRID_SIZE = 11;
+    const CELL_SIZE = canvas.width / GRID_SIZE;
+
+    /* Game State */
+    let currentLevel = 1;
+    let score = 0;
+    let lives = 3;
+    let targetIndex = 0; // Next character index to eat
+    let dino = { x: 5, y: 5, dirX: 0, dirY: 0 };
+    let spawnedLetters = [];
+    let isGameOver = false;
+    let isPaused = false;
+    let gameLoopInterval = null;
+
+    function initLevel() {
+      targetIndex = 0;
+      const cur = WORD_LEVELS[currentLevel - 1];
+      document.getElementById("level-display").innerText = currentLevel;
+      document.getElementById("word-image").innerText = cur.icon;
+      
+      // Update slots
+      const slots = document.getElementById("slots-container");
+      slots.innerHTML = "";
+      for (let i = 0; i < cur.word.length; i++) {
+        const slot = document.createElement("div");
+        slot.className = "letter-slot";
+        slot.id = `slot-${i}`;
+        slot.innerText = "_";
+        slots.appendChild(slot);
+      }
+
+      // Reset Dino to center
+      dino.x = Math.floor(GRID_SIZE / 2);
+      dino.y = Math.floor(GRID_SIZE / 2);
+      dino.dirX = 0;
+      dino.dirY = 0;
+
+      // Spawn target word letters + 3 random decoy letters
+      spawnedLetters = [];
+      const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+      const lettersToPlace = cur.word.split("");
+
+      // Add distractor letters
+      for (let i = 0; i < 3; i++) {
+        lettersToPlace.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
+      }
+
+      // Scatter letters safely on grid
+      lettersToPlace.forEach(char => {
+        let placed = false;
+        while (!placed) {
+          let rx = Math.floor(Math.random() * GRID_SIZE);
+          let ry = Math.floor(Math.random() * GRID_SIZE);
+          if ((rx !== dino.x || ry !== dino.y) && !spawnedLetters.some(l => l.x === rx && l.y === ry)) {
+            spawnedLetters.push({ char, x: rx, y: ry });
+            placed = true;
+          }
+        }
+      });
+
+      speakCurrentWord();
+    }
+
+    /* Input Handling */
+    function sendInput(dir) {
+      if (isPaused || isGameOver) return;
+      if (dir === 'UP' && dino.dirY === 0) { dino.dirX = 0; dino.dirY = -1; }
+      if (dir === 'DOWN' && dino.dirY === 0) { dino.dirX = 0; dino.dirY = 1; }
+      if (dir === 'LEFT' && dino.dirX === 0) { dino.dirX = -1; dino.dirY = 0; }
+      if (dir === 'RIGHT' && dino.dirX === 0) { dino.dirX = 1; dino.dirY = 0; }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowUp" || e.key === "w") sendInput("UP");
+      if (e.key === "ArrowDown" || e.key === "s") sendInput("DOWN");
+      if (e.key === "ArrowLeft" || e.key === "a") sendInput("LEFT");
+      if (e.key === "ArrowRight" || e.key === "d") sendInput("RIGHT");
+    });
+
+    /* Game Update Tick */
+    function tick() {
+      if (isPaused || isGameOver) return;
+
+      // Move Dino
+      dino.x += dino.dirX;
+      dino.y += dino.dirY;
+
+      // Wrap-around edges like Pacman
+      if (dino.x < 0) dino.x = GRID_SIZE - 1;
+      if (dino.x >= GRID_SIZE) dino.x = 0;
+      if (dino.y < 0) dino.y = GRID_SIZE - 1;
+      if (dino.y >= GRID_SIZE) dino.y = 0;
+
+      // Check letter collision
+      const eatenIdx = spawnedLetters.findIndex(l => l.x === dino.x && l.y === dino.y);
+      if (eatenIdx !== -1) {
+        const item = spawnedLetters[eatenIdx];
+        const curWord = WORD_LEVELS[currentLevel - 1].word;
+
+        if (item.char === curWord[targetIndex]) {
+          // CORRECT LETTER!
+          soundEat();
+          speakLetter(item.char);
+          
+          const slot = document.getElementById(`slot-${targetIndex}`);
+          slot.innerText = item.char;
+          slot.classList.add("filled");
+
+          spawnedLetters.splice(eatenIdx, 1);
+          targetIndex++;
+
+          // Check if Word Complete
+          if (targetIndex === curWord.length) {
+            soundCorrect();
+            score += 10;
+            document.getElementById("score-display").innerText = score;
+            triggerLevelWin();
+          }
+        } else {
+          // WRONG LETTER!
+          soundWrong();
+          lives--;
+          document.getElementById("lives-display").innerText = lives;
+
+          // Bounce back dino
+          dino.x -= dino.dirX;
+          dino.y -= dino.dirY;
+          dino.dirX = 0;
+          dino.dirY = 0;
+
+          if (lives <= 0) {
+            triggerGameOver();
+          }
+        }
+      }
+
+      draw();
+    }
+
+    /* Drawing Routine */
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw subtle grid tiles
+      for (let x = 0; x < GRID_SIZE; x++) {
+        for (let y = 0; y < GRID_SIZE; y++) {
+          ctx.fillStyle = (x + y) % 2 === 0 ? "#F1F5F9" : "#E2E8F0";
+          ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+        }
+      }
+
+      // Draw Letters (Glowing bubbles)
+      spawnedLetters.forEach(l => {
+        const px = l.x * CELL_SIZE + CELL_SIZE / 2;
+        const py = l.y * CELL_SIZE + CELL_SIZE / 2;
+
+        ctx.beginPath();
+        ctx.arc(px, py, CELL_SIZE * 0.38, 0, Math.PI * 2);
+        ctx.fillStyle = "#F59E0B";
+        ctx.fill();
+
+        ctx.font = "bold 20px 'Fredoka One', cursive";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(l.char, px, py + 2);
+      });
+
+      // Draw Cute Dinosaur (Avatar)
+      const dx = dino.x * CELL_SIZE + CELL_SIZE / 2;
+      const dy = dino.y * CELL_SIZE + CELL_SIZE / 2;
+
+      // Dino Body
+      ctx.beginPath();
+      ctx.arc(dx, dy, CELL_SIZE * 0.42, 0, Math.PI * 2);
+      ctx.fillStyle = "#10B981"; // Dinosaur green
+      ctx.fill();
+
+      // Dino Eyes
+      const eyeOffsetX = dino.dirX !== 0 ? dino.dirX * 5 : 4;
+      const eyeOffsetY = dino.dirY !== 0 ? dino.dirY * 5 : -4;
+      ctx.beginPath();
+      ctx.arc(dx + eyeOffsetX, dy + eyeOffsetY, 4, 0, Math.PI * 2);
+      ctx.fillStyle = "#0F172A";
+      ctx.fill();
+
+      // Dino Cheeks (cute blush)
+      ctx.beginPath();
+      ctx.arc(dx - 6, dy + 6, 3, 0, Math.PI * 2);
+      ctx.arc(dx + 6, dy + 6, 3, 0, Math.PI * 2);
+      ctx.fillStyle = "#FCA5A5";
+      ctx.fill();
+    }
+
+    /* Modal / State handlers */
+    function triggerLevelWin() {
+      isPaused = true;
+      const overlay = document.getElementById("overlay");
+      document.getElementById("overlay-title").innerText = "Awesome! 🎉";
+      document.getElementById("overlay-msg").innerText = `You spelled ${WORD_LEVELS[currentLevel - 1].word}!`;
+      document.getElementById("overlay-btn").innerText = "Next Word ➔";
+      overlay.style.display = "flex";
+    }
+
+    function triggerGameOver() {
+      isGameOver = true;
+      const overlay = document.getElementById("overlay");
+      document.getElementById("overlay-title").innerText = "Try Again! 💪";
+      document.getElementById("overlay-msg").innerText = "Don't give up, you can do it!";
+      document.getElementById("overlay-btn").innerText = "Restart Level 🔄";
+      overlay.style.display = "flex";
+    }
+
+    function handleOverlayAction() {
+      const overlay = document.getElementById("overlay");
+      overlay.style.display = "none";
+
+      if (isGameOver) {
+        lives = 3;
+        document.getElementById("lives-display").innerText = lives;
+        isGameOver = false;
+        initLevel();
+      } else {
+        if (currentLevel < WORD_LEVELS.length) {
+          currentLevel++;
+          initLevel();
+        } else {
+          alert("🎉 Congratulations! You finished all 50 levels!");
+          currentLevel = 1;
+          initLevel();
+        }
+      }
+      isPaused = false;
+    }
+
+    // Start Game
+    initLevel();
+    gameLoopInterval = setInterval(tick, 220); // Comfortable speed for kids
+
+    // Register Service Worker for PWA
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js").catch(console.error);
+    }
+  </script>
+</body>
+</html>
