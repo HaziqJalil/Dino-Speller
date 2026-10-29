@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Dino Speller - Kids Spelling Adventure</title>
+  <title>Dino Speller 2.5D - Kids Spelling Adventure</title>
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#4ADE80" />
+  <meta name="theme-color" content="#10B981" />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@600;700&display=swap" rel="stylesheet" />
 
   <style>
     :root {
-      --bg-color: #E0F2FE;
+      --bg-gradient: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%);
       --card-bg: #FFFFFF;
       --primary: #10B981;
       --primary-dark: #059669;
       --accent: #F59E0B;
       --danger: #EF4444;
       --text: #1E293B;
-      --board-bg: #F8FAFC;
     }
 
     * {
@@ -29,7 +28,7 @@
     }
 
     body {
-      background-color: var(--bg-color);
+      background: var(--bg-gradient);
       font-family: 'Quicksand', sans-serif;
       color: var(--text);
       display: flex;
@@ -40,11 +39,11 @@
       touch-action: manipulation;
     }
 
-    /* Top Bar */
+    /* Top Stats */
     header {
       width: 100%;
-      max-width: 950px;
-      padding: 10px 20px;
+      max-width: 980px;
+      padding: 12px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -52,86 +51,152 @@
 
     .badge {
       background: var(--card-bg);
-      padding: 6px 16px;
+      padding: 8px 18px;
       border-radius: 999px;
       font-family: 'Fredoka One', cursive;
       font-size: 1.1rem;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    /* Main Container */
+    /* Layout */
     .game-layout {
       display: flex;
       flex-direction: row;
-      gap: 20px;
-      max-width: 950px;
+      gap: 24px;
+      max-width: 980px;
       width: 100%;
-      padding: 10px 20px;
+      padding: 0 20px 20px 20px;
       align-items: flex-start;
       justify-content: center;
     }
 
-    /* Side Preview Card */
+    /* Side Spelling & Guide Panel */
     .side-card {
       background: var(--card-bg);
-      border-radius: 24px;
+      border-radius: 28px;
       padding: 20px;
-      width: 240px;
+      width: 260px;
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-      border: 4px solid #BAE6FD;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+      border: 4px solid #FFFFFF;
     }
 
     .image-frame {
-      width: 130px;
-      height: 130px;
-      border-radius: 20px;
+      width: 110px;
+      height: 110px;
+      border-radius: 24px;
       background: #FEF3C7;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 5rem;
+      font-size: 4.2rem;
       margin-bottom: 12px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
-      animation: bounce 2s infinite ease-in-out;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+    .target-callout {
+      background: #FEF08A;
+      border: 2px dashed #EAB308;
+      border-radius: 16px;
+      padding: 10px 14px;
+      margin: 12px 0;
+      width: 100%;
     }
 
-    .hint-label {
-      font-size: 0.9rem;
-      color: #64748B;
+    .target-callout .label {
+      font-size: 0.8rem;
       font-weight: 700;
+      color: #854D0E;
       text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+    }
+
+    .target-callout .next-letter {
+      font-family: 'Fredoka One', cursive;
+      font-size: 2rem;
+      color: #B45309;
+      animation: pulse 1s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.18); }
+    }
+
+    /* Step-by-Step Spelling Order Display */
+    .spelling-guide {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .guide-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #64748B;
+      text-align: left;
+    }
+
+    .guide-letters {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .guide-box {
+      width: 38px;
+      height: 44px;
+      border-radius: 10px;
+      background: #F1F5F9;
+      border: 2px solid #CBD5E1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Fredoka One', cursive;
+      font-size: 1.4rem;
+      color: #94A3B8;
+      transition: all 0.3s;
+    }
+
+    .guide-box.active {
+      border-color: #F59E0B;
+      background: #FEF3C7;
+      color: #D97706;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .guide-box.eaten {
+      border-color: #10B981;
+      background: #D1FAE5;
+      color: #059669;
     }
 
     .speak-btn {
-      margin-top: 10px;
+      margin-top: 14px;
       background: #38BDF8;
       border: none;
       color: white;
-      padding: 8px 16px;
-      border-radius: 12px;
+      padding: 9px 18px;
+      border-radius: 14px;
       cursor: pointer;
       font-weight: 700;
+      font-family: 'Fredoka One', cursive;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: transform 0.1s;
+      box-shadow: 0 4px 10px rgba(56, 189, 248, 0.3);
     }
-    .speak-btn:active { transform: scale(0.95); }
 
-    /* Arena & Word Display */
+    /* Arena & Canvas */
     .play-area {
       display: flex;
       flex-direction: column;
@@ -139,52 +204,24 @@
       gap: 12px;
     }
 
-    .word-slots {
-      display: flex;
-      gap: 10px;
-    }
-
-    .letter-slot {
-      width: 50px;
-      height: 55px;
-      background: white;
-      border: 3px dashed #CBD5E1;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Fredoka One', cursive;
-      font-size: 2rem;
-      color: var(--primary-dark);
-      transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-
-    .letter-slot.filled {
-      border-style: solid;
-      border-color: var(--primary);
-      background: #D1FAE5;
-      transform: scale(1.08);
-    }
-
-    /* Canvas Board */
     #board-container {
       position: relative;
     }
 
     canvas {
-      background: var(--board-bg);
-      border-radius: 24px;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      background: #F8FAFC;
+      border-radius: 28px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.1);
       border: 6px solid #FFFFFF;
       display: block;
     }
 
-    /* Mobile Controls */
+    /* Controls */
     .d-pad {
       display: none;
       grid-template-columns: repeat(3, 56px);
       grid-gap: 8px;
-      margin: 15px auto;
+      margin: 8px auto;
     }
 
     .d-btn {
@@ -197,7 +234,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.06);
       cursor: pointer;
     }
     .d-btn:active { background: #E2E8F0; }
@@ -206,9 +243,9 @@
     .overlay {
       position: absolute;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.7);
+      background: rgba(15, 23, 42, 0.75);
       backdrop-filter: blur(4px);
-      border-radius: 24px;
+      border-radius: 28px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -219,40 +256,31 @@
 
     .overlay h2 {
       font-family: 'Fredoka One', cursive;
-      font-size: 2.5rem;
-      margin-bottom: 10px;
+      font-size: 2.4rem;
+      margin-bottom: 8px;
     }
 
     .btn-action {
       background: var(--primary);
       color: white;
       border: none;
-      padding: 12px 28px;
+      padding: 12px 30px;
       font-size: 1.2rem;
       border-radius: 999px;
       font-family: 'Fredoka One', cursive;
       cursor: pointer;
       margin-top: 15px;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);
     }
 
-    @media (max-width: 800px) {
+    @media (max-width: 860px) {
       .game-layout {
         flex-direction: column;
         align-items: center;
       }
       .side-card {
         width: 100%;
-        max-width: 440px;
-        flex-direction: row;
-        justify-content: space-around;
-        padding: 12px;
-      }
-      .image-frame {
-        width: 70px;
-        height: 70px;
-        font-size: 2.8rem;
-        margin-bottom: 0;
+        max-width: 480px;
       }
       .d-pad {
         display: grid;
@@ -263,35 +291,33 @@
 <body>
 
   <header>
-    <div class="badge" style="color: #0284C7;">
-      🦖 Level: <span id="level-display">1</span>/50
-    </div>
-    <div class="badge" style="color: #E11D48;">
-      ❤️ Lives: <span id="lives-display">3</span>
-    </div>
-    <div class="badge" style="color: #D97706;">
-      ⭐ Stars: <span id="score-display">0</span>
-    </div>
+    <div class="badge" style="color: #0284C7;">🦖 Level <span id="level-display">1</span>/50</div>
+    <div class="badge" style="color: #E11D48;">❤️ Lives <span id="lives-display">3</span></div>
+    <div class="badge" style="color: #D97706;">⭐ Stars <span id="score-display">0</span></div>
   </header>
 
   <div class="game-layout">
-    <!-- Side Preview Card -->
+    <!-- Side Spelling Learning Panel -->
     <div class="side-card">
       <div class="image-frame" id="word-image">🐱</div>
-      <div>
-        <div class="hint-label">Spell This Word</div>
-        <button class="speak-btn" onclick="speakCurrentWord()">
-          🔊 Hear Word
-        </button>
+      
+      <div class="target-callout">
+        <div class="label">Eat This Letter Next:</div>
+        <div class="next-letter" id="target-letter-display">C</div>
       </div>
+
+      <div class="spelling-guide">
+        <div class="guide-title">Spelling Order:</div>
+        <div class="guide-letters" id="guide-letters-container"></div>
+      </div>
+
+      <button class="speak-btn" onclick="speakCurrentWord()">🔊 Hear Word</button>
     </div>
 
-    <!-- Gameplay Area -->
+    <!-- 2.5D Play Arena -->
     <div class="play-area">
-      <div class="word-slots" id="slots-container"></div>
-      
       <div id="board-container">
-        <canvas id="gameCanvas" width="440" height="440"></canvas>
+        <canvas id="gameCanvas" width="480" height="480"></canvas>
         <div id="overlay" class="overlay" style="display: none;">
           <h2 id="overlay-title">Awesome! 🎉</h2>
           <p id="overlay-msg">Word Completed!</p>
@@ -299,7 +325,7 @@
         </div>
       </div>
 
-      <!-- Touch D-Pad for Mobile Devices -->
+      <!-- Mobile D-Pad -->
       <div class="d-pad">
         <div></div>
         <button class="d-btn" onclick="sendInput('UP')">⬆️</button>
@@ -313,10 +339,7 @@
 
   <script>
     /* ========================================================
-       LEVEL DATABASE (50 Curated Words with Emojis)
-       Level 1-15:  3 letters
-       Level 16-30: 4 letters
-       Level 31-50: 5 letters
+       50 LEVELS DATABASE (3-Letter, 4-Letter, 5-Letter)
     ======================================================== */
     const WORD_LEVELS = [
       // 1-15 (3 Letters)
@@ -341,7 +364,7 @@
       { word: "SMILE", icon: "😊" }, { word: "CLOCK", icon: "⏰" }
     ];
 
-    /* Sound Synthesizer via Web Audio API */
+    /* Audio Synthesizer */
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playBeep(freq, type = 'sine', duration = 0.15) {
       if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -356,13 +379,13 @@
       osc.start();
       osc.stop(audioCtx.currentTime + duration);
     }
-
-    function soundEat() { playBeep(587.33, 'triangle', 0.1); } // Friendly bite
-    function soundCorrect() {
+    function soundEat() { playBeep(620, 'triangle', 0.12); }
+    function soundWin() {
       playBeep(523.25, 'sine', 0.1);
-      setTimeout(() => playBeep(659.25, 'sine', 0.2), 100);
+      setTimeout(() => playBeep(659.25, 'sine', 0.15), 100);
+      setTimeout(() => playBeep(783.99, 'sine', 0.25), 220);
     }
-    function soundWrong() { playBeep(180, 'sawtooth', 0.3); }
+    function soundHurt() { playBeep(160, 'sawtooth', 0.35); }
 
     function speakCurrentWord() {
       const item = WORD_LEVELS[currentLevel - 1];
@@ -371,86 +394,125 @@
       utter.pitch = 1.1;
       window.speechSynthesis.speak(utter);
     }
-
-    function speakLetter(letter) {
-      const utter = new SpeechSynthesisUtterance(letter);
+    function speakLetter(l) {
+      const utter = new SpeechSynthesisUtterance(l);
       utter.rate = 1.0;
       window.speechSynthesis.speak(utter);
     }
 
-    /* Grid & Canvas Config */
+    /* 2.5D Isometric Setup */
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    const GRID_SIZE = 11;
-    const CELL_SIZE = canvas.width / GRID_SIZE;
+    const GRID_SIZE = 7;
+    const TILE_W = 56;
+    const TILE_H = 28;
+    const TILE_THICKNESS = 16;
+    const ORIGIN_X = canvas.width / 2;
+    const ORIGIN_Y = 100;
+
+    function toIso(gx, gy) {
+      return {
+        x: ORIGIN_X + (gx - gy) * (TILE_W / 2),
+        y: ORIGIN_Y + (gx + gy) * (TILE_H / 2)
+      };
+    }
 
     /* Game State */
     let currentLevel = 1;
     let score = 0;
     let lives = 3;
-    let targetIndex = 0; // Next character index to eat
-    let dino = { x: 5, y: 5, dirX: 0, dirY: 0 };
-    let spawnedLetters = [];
+    let targetIndex = 0;
     let isGameOver = false;
     let isPaused = false;
-    let gameLoopInterval = null;
+    let spawnedLetters = [];
+
+    // Dino Object
+    const dino = {
+      gx: 3, gy: 3,
+      targetGx: 3, targetGy: 3,
+      screenX: 0, screenY: 0,
+      facing: 1, // 1 for right, -1 for left
+      state: 'idle', // 'idle', 'walk', 'eat', 'hurt'
+      stateTimer: 0,
+      walkCycle: 0
+    };
 
     function initLevel() {
       targetIndex = 0;
       const cur = WORD_LEVELS[currentLevel - 1];
       document.getElementById("level-display").innerText = currentLevel;
       document.getElementById("word-image").innerText = cur.icon;
-      
-      // Update slots
-      const slots = document.getElementById("slots-container");
-      slots.innerHTML = "";
-      for (let i = 0; i < cur.word.length; i++) {
-        const slot = document.createElement("div");
-        slot.className = "letter-slot";
-        slot.id = `slot-${i}`;
-        slot.innerText = "_";
-        slots.appendChild(slot);
-      }
 
-      // Reset Dino to center
-      dino.x = Math.floor(GRID_SIZE / 2);
-      dino.y = Math.floor(GRID_SIZE / 2);
-      dino.dirX = 0;
-      dino.dirY = 0;
+      dino.gx = 3;
+      dino.gy = 3;
+      dino.targetGx = 3;
+      dino.targetGy = 3;
+      dino.state = 'idle';
+      const pos = toIso(dino.gx, dino.gy);
+      dino.screenX = pos.x;
+      dino.screenY = pos.y;
 
-      // Spawn target word letters + 3 random decoy letters
+      // Spawn letters
       spawnedLetters = [];
       const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
       const lettersToPlace = cur.word.split("");
 
-      // Add distractor letters
+      // Distractors
       for (let i = 0; i < 3; i++) {
         lettersToPlace.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
       }
 
-      // Scatter letters safely on grid
       lettersToPlace.forEach(char => {
         let placed = false;
         while (!placed) {
           let rx = Math.floor(Math.random() * GRID_SIZE);
           let ry = Math.floor(Math.random() * GRID_SIZE);
-          if ((rx !== dino.x || ry !== dino.y) && !spawnedLetters.some(l => l.x === rx && l.y === ry)) {
-            spawnedLetters.push({ char, x: rx, y: ry });
+          if ((rx !== dino.gx || ry !== dino.gy) && !spawnedLetters.some(l => l.gx === rx && l.gy === ry)) {
+            spawnedLetters.push({ char, gx: rx, gy: ry, floatOffset: Math.random() * Math.PI * 2 });
             placed = true;
           }
         }
       });
 
+      updateSideGuide();
       speakCurrentWord();
+    }
+
+    function updateSideGuide() {
+      const curWord = WORD_LEVELS[currentLevel - 1].word;
+      const targetChar = curWord[targetIndex] || "✓";
+      document.getElementById("target-letter-display").innerText = targetChar;
+
+      const container = document.getElementById("guide-letters-container");
+      container.innerHTML = "";
+      for (let i = 0; i < curWord.length; i++) {
+        const box = document.createElement("div");
+        box.className = "guide-box";
+        box.innerText = curWord[i];
+        if (i < targetIndex) box.classList.add("eaten");
+        else if (i === targetIndex) box.classList.add("active");
+        container.appendChild(box);
+      }
     }
 
     /* Input Handling */
     function sendInput(dir) {
-      if (isPaused || isGameOver) return;
-      if (dir === 'UP' && dino.dirY === 0) { dino.dirX = 0; dino.dirY = -1; }
-      if (dir === 'DOWN' && dino.dirY === 0) { dino.dirX = 0; dino.dirY = 1; }
-      if (dir === 'LEFT' && dino.dirX === 0) { dino.dirX = -1; dino.dirY = 0; }
-      if (dir === 'RIGHT' && dino.dirX === 0) { dino.dirX = 1; dino.dirY = 0; }
+      if (isPaused || isGameOver || dino.gx !== dino.targetGx || dino.gy !== dino.targetGy) return;
+      
+      let nextGx = dino.gx;
+      let nextGy = dino.gy;
+
+      if (dir === 'UP') { nextGy--; }
+      if (dir === 'DOWN') { nextGy++; }
+      if (dir === 'LEFT') { nextGx--; dino.facing = -1; }
+      if (dir === 'RIGHT') { nextGx++; dino.facing = 1; }
+
+      // Keep within bounds
+      if (nextGx >= 0 && nextGx < GRID_SIZE && nextGy >= 0 && nextGy < GRID_SIZE) {
+        dino.targetGx = nextGx;
+        dino.targetGy = nextGy;
+        dino.state = 'walk';
+      }
     }
 
     window.addEventListener("keydown", (e) => {
@@ -460,122 +522,355 @@
       if (e.key === "ArrowRight" || e.key === "d") sendInput("RIGHT");
     });
 
-    /* Game Update Tick */
-    function tick() {
+    /* Particle / Star System */
+    const particles = [];
+    function spawnStars(x, y) {
+      for (let i = 0; i < 12; i++) {
+        particles.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6 - 2,
+          size: Math.random() * 5 + 3,
+          color: ['#FBBF24', '#34D399', '#60A5FA'][Math.floor(Math.random() * 3)],
+          life: 25
+        });
+      }
+    }
+
+    /* Core Render & Update Loop */
+    function loop() {
+      update();
+      render();
+      requestAnimationFrame(loop);
+    }
+
+    function update() {
       if (isPaused || isGameOver) return;
 
-      // Move Dino
-      dino.x += dino.dirX;
-      dino.y += dino.dirY;
+      // Dino Movement Interpolation
+      const targetPos = toIso(dino.targetGx, dino.targetGy);
+      const dx = targetPos.x - dino.screenX;
+      const dy = targetPos.y - dino.screenY;
+      const dist = Math.hypot(dx, dy);
 
-      // Wrap-around edges like Pacman
-      if (dino.x < 0) dino.x = GRID_SIZE - 1;
-      if (dino.x >= GRID_SIZE) dino.x = 0;
-      if (dino.y < 0) dino.y = GRID_SIZE - 1;
-      if (dino.y >= GRID_SIZE) dino.y = 0;
+      if (dist > 1.5) {
+        dino.screenX += dx * 0.22;
+        dino.screenY += dy * 0.22;
+        dino.walkCycle += 0.25;
+      } else {
+        dino.screenX = targetPos.x;
+        dino.screenY = targetPos.y;
+        dino.gx = dino.targetGx;
+        dino.gy = dino.targetGy;
 
-      // Check letter collision
-      const eatenIdx = spawnedLetters.findIndex(l => l.x === dino.x && l.y === dino.y);
-      if (eatenIdx !== -1) {
-        const item = spawnedLetters[eatenIdx];
-        const curWord = WORD_LEVELS[currentLevel - 1].word;
+        if (dino.state === 'walk') dino.state = 'idle';
 
-        if (item.char === curWord[targetIndex]) {
-          // CORRECT LETTER!
-          soundEat();
-          speakLetter(item.char);
-          
-          const slot = document.getElementById(`slot-${targetIndex}`);
-          slot.innerText = item.char;
-          slot.classList.add("filled");
+        // Check if on a letter
+        const eatenIdx = spawnedLetters.findIndex(l => l.gx === dino.gx && l.gy === dino.gy);
+        if (eatenIdx !== -1) {
+          const item = spawnedLetters[eatenIdx];
+          const curWord = WORD_LEVELS[currentLevel - 1].word;
 
-          spawnedLetters.splice(eatenIdx, 1);
-          targetIndex++;
+          if (item.char === curWord[targetIndex]) {
+            // Correct letter: play eat animation
+            soundEat();
+            speakLetter(item.char);
+            dino.state = 'eat';
+            dino.stateTimer = 18;
+            spawnStars(dino.screenX, dino.screenY - 20);
 
-          // Check if Word Complete
-          if (targetIndex === curWord.length) {
-            soundCorrect();
-            score += 10;
-            document.getElementById("score-display").innerText = score;
-            triggerLevelWin();
-          }
-        } else {
-          // WRONG LETTER!
-          soundWrong();
-          lives--;
-          document.getElementById("lives-display").innerText = lives;
+            spawnedLetters.splice(eatenIdx, 1);
+            targetIndex++;
+            updateSideGuide();
 
-          // Bounce back dino
-          dino.x -= dino.dirX;
-          dino.y -= dino.dirY;
-          dino.dirX = 0;
-          dino.dirY = 0;
+            if (targetIndex === curWord.length) {
+              soundWin();
+              score += 10;
+              document.getElementById("score-display").innerText = score;
+              setTimeout(triggerLevelWin, 300);
+            }
+          } else {
+            // Wrong letter: Hurt reaction
+            soundHurt();
+            dino.state = 'hurt';
+            dino.stateTimer = 22;
+            lives--;
+            document.getElementById("lives-display").innerText = lives;
 
-          if (lives <= 0) {
-            triggerGameOver();
+            if (lives <= 0) {
+              triggerGameOver();
+            }
           }
         }
       }
 
-      draw();
+      if (dino.stateTimer > 0) {
+        dino.stateTimer--;
+        if (dino.stateTimer === 0) dino.state = 'idle';
+      }
+
+      // Update particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life--;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
     }
 
-    /* Drawing Routine */
-    function draw() {
+    /* 2.5D Isometric Rendering */
+    function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw subtle grid tiles
-      for (let x = 0; x < GRID_SIZE; x++) {
-        for (let y = 0; y < GRID_SIZE; y++) {
-          ctx.fillStyle = (x + y) % 2 === 0 ? "#F1F5F9" : "#E2E8F0";
-          ctx.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+      // 1. Draw 2.5D Isometric Board Grid
+      for (let gy = 0; gy < GRID_SIZE; gy++) {
+        for (let gx = 0; gx < GRID_SIZE; gx++) {
+          drawIsoTile(gx, gy);
         }
       }
 
-      // Draw Letters (Glowing bubbles)
+      // 2. Sort letters and Dino by depth (Y position) for natural 2.5D layering
+      const renderList = [];
       spawnedLetters.forEach(l => {
-        const px = l.x * CELL_SIZE + CELL_SIZE / 2;
-        const py = l.y * CELL_SIZE + CELL_SIZE / 2;
-
-        ctx.beginPath();
-        ctx.arc(px, py, CELL_SIZE * 0.38, 0, Math.PI * 2);
-        ctx.fillStyle = "#F59E0B";
-        ctx.fill();
-
-        ctx.font = "bold 20px 'Fredoka One', cursive";
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(l.char, px, py + 2);
+        const pos = toIso(l.gx, l.gy);
+        renderList.push({ type: 'letter', depth: l.gx + l.gy, pos, char: l.char, float: l.floatOffset });
       });
 
-      // Draw Cute Dinosaur (Avatar)
-      const dx = dino.x * CELL_SIZE + CELL_SIZE / 2;
-      const dy = dino.y * CELL_SIZE + CELL_SIZE / 2;
+      renderList.push({
+        type: 'dino',
+        depth: dino.gx + dino.gy + 0.1, // Dino slightly in front
+        pos: { x: dino.screenX, y: dino.screenY }
+      });
 
-      // Dino Body
+      renderList.sort((a, b) => a.depth - b.depth);
+
+      // 3. Render sorted elements
+      renderList.forEach(item => {
+        if (item.type === 'letter') {
+          drawIsoLetter(item.pos.x, item.pos.y, item.char, item.float);
+        } else {
+          drawTriceratops(item.pos.x, item.pos.y);
+        }
+      });
+
+      // 4. Draw celebratory particles
+      particles.forEach(p => {
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    /* Draw 3D Isometric Tile */
+    function drawIsoTile(gx, gy) {
+      const p = toIso(gx, gy);
+      const isAlt = (gx + gy) % 2 === 0;
+
+      // Top Face
       ctx.beginPath();
-      ctx.arc(dx, dy, CELL_SIZE * 0.42, 0, Math.PI * 2);
-      ctx.fillStyle = "#10B981"; // Dinosaur green
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x + TILE_W / 2, p.y + TILE_H / 2);
+      ctx.lineTo(p.x, p.y + TILE_H);
+      ctx.lineTo(p.x - TILE_W / 2, p.y + TILE_H / 2);
+      ctx.closePath();
+      ctx.fillStyle = isAlt ? "#E2E8F0" : "#CBD5E1";
+      ctx.fill();
+      ctx.strokeStyle = "#FFFFFF";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Front Left Face (3D Thickness)
+      ctx.beginPath();
+      ctx.moveTo(p.x - TILE_W / 2, p.y + TILE_H / 2);
+      ctx.lineTo(p.x, p.y + TILE_H);
+      ctx.lineTo(p.x, p.y + TILE_H + TILE_THICKNESS);
+      ctx.lineTo(p.x - TILE_W / 2, p.y + TILE_H / 2 + TILE_THICKNESS);
+      ctx.closePath();
+      ctx.fillStyle = "#94A3B8";
       ctx.fill();
 
-      // Dino Eyes
-      const eyeOffsetX = dino.dirX !== 0 ? dino.dirX * 5 : 4;
-      const eyeOffsetY = dino.dirY !== 0 ? dino.dirY * 5 : -4;
+      // Front Right Face (3D Thickness)
       ctx.beginPath();
-      ctx.arc(dx + eyeOffsetX, dy + eyeOffsetY, 4, 0, Math.PI * 2);
-      ctx.fillStyle = "#0F172A";
-      ctx.fill();
-
-      // Dino Cheeks (cute blush)
-      ctx.beginPath();
-      ctx.arc(dx - 6, dy + 6, 3, 0, Math.PI * 2);
-      ctx.arc(dx + 6, dy + 6, 3, 0, Math.PI * 2);
-      ctx.fillStyle = "#FCA5A5";
+      ctx.moveTo(p.x, p.y + TILE_H);
+      ctx.lineTo(p.x + TILE_W / 2, p.y + TILE_H / 2);
+      ctx.lineTo(p.x + TILE_W / 2, p.y + TILE_H / 2 + TILE_THICKNESS);
+      ctx.lineTo(p.x, p.y + TILE_H + TILE_THICKNESS);
+      ctx.closePath();
+      ctx.fillStyle = "#64748B";
       ctx.fill();
     }
 
-    /* Modal / State handlers */
+    /* Draw Floating 3D Letter */
+    function drawIsoLetter(x, y, char, floatSeed) {
+      const floatY = Math.sin(Date.now() * 0.005 + floatSeed) * 5;
+      const centerY = y + TILE_H / 2;
+
+      // Ground Shadow
+      ctx.beginPath();
+      ctx.ellipse(x, centerY + 2, 16, 8, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(15, 23, 42, 0.18)";
+      ctx.fill();
+
+      // Floating Orb
+      ctx.save();
+      ctx.translate(x, centerY - 16 + floatY);
+
+      // Token 3D edge
+      ctx.beginPath();
+      ctx.arc(0, 4, 18, 0, Math.PI * 2);
+      ctx.fillStyle = "#D97706";
+      ctx.fill();
+
+      // Token Face
+      ctx.beginPath();
+      ctx.arc(0, 0, 18, 0, Math.PI * 2);
+      ctx.fillStyle = "#F59E0B";
+      ctx.fill();
+
+      // Text
+      ctx.font = "bold 18px 'Fredoka One', cursive";
+      ctx.fillStyle = "#FFFFFF";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(char, 0, 1);
+      ctx.restore();
+    }
+
+    /* Draw Animated Triceratops (Styled after the uploaded character) */
+    function drawTriceratops(x, y) {
+      ctx.save();
+      ctx.translate(x, y + TILE_H / 2);
+      ctx.scale(dino.facing, 1); // Flip horizontally depending on direction
+
+      let walkBob = dino.state === 'walk' ? Math.sin(dino.walkCycle) * 3 : 0;
+      let mouthOpen = dino.state === 'eat';
+      let isHurt = dino.state === 'hurt';
+
+      // Dino Shadow
+      ctx.beginPath();
+      ctx.ellipse(0, 3, 24, 10, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(15, 23, 42, 0.22)";
+      ctx.fill();
+
+      ctx.translate(0, -26 + walkBob);
+
+      // Tail
+      ctx.beginPath();
+      ctx.moveTo(-16, 6);
+      ctx.quadraticCurveTo(-28, 2 + Math.sin(Date.now() * 0.008) * 3, -24, 14);
+      ctx.closePath();
+      ctx.fillStyle = "#1BBBAA";
+      ctx.fill();
+
+      // Back Legs
+      ctx.fillStyle = "#149588";
+      ctx.beginPath();
+      ctx.ellipse(-10, 18, 5, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(12, 18, 5, 7, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Chubby Teal Body
+      ctx.beginPath();
+      ctx.ellipse(0, 6, 20, 16, 0, 0, Math.PI * 2);
+      ctx.fillStyle = isHurt ? "#F87171" : "#1BBBAA";
+      ctx.fill();
+
+      // Yellow Belly Patch
+      ctx.beginPath();
+      ctx.ellipse(2, 12, 13, 8, 0, 0, Math.PI * 2);
+      ctx.fillStyle = "#FCD34D";
+      ctx.fill();
+
+      // Front Legs
+      ctx.fillStyle = "#1BBBAA";
+      ctx.beginPath();
+      ctx.ellipse(-8, 20, 5, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(10, 20, 5, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Head Frill / Shield (Triceratops crest)
+      ctx.beginPath();
+      ctx.arc(8, -8, 18, Math.PI * 0.6, Math.PI * 1.9);
+      ctx.fillStyle = "#149588";
+      ctx.fill();
+
+      // Golden Frill Crest Tips
+      for (let angle = 2.2; angle < 5.4; angle += 0.9) {
+        let hx = 8 + Math.cos(angle) * 19;
+        let hy = -8 + Math.sin(angle) * 19;
+        ctx.beginPath();
+        ctx.arc(hx, hy, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#FCD34D";
+        ctx.fill();
+      }
+
+      // Head
+      ctx.beginPath();
+      ctx.ellipse(10, -2, 14, 13, 0.1, 0, Math.PI * 2);
+      ctx.fillStyle = isHurt ? "#F87171" : "#1BBBAA";
+      ctx.fill();
+
+      // Yellow Brow Horns
+      ctx.fillStyle = "#FDE68A";
+      ctx.beginPath();
+      ctx.moveTo(10, -14);
+      ctx.lineTo(16, -24);
+      ctx.lineTo(14, -13);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(16, -12);
+      ctx.lineTo(24, -20);
+      ctx.lineTo(19, -10);
+      ctx.fill();
+
+      // Snout & Cute Nose Horn
+      ctx.beginPath();
+      ctx.moveTo(22, -4);
+      ctx.lineTo(27, -8);
+      ctx.lineTo(24, -1);
+      ctx.fill();
+
+      // Friendly Eye
+      ctx.beginPath();
+      if (isHurt) {
+        // Closed / Pain Eye (><)
+        ctx.strokeStyle = "#0F172A";
+        ctx.lineWidth = 2.5;
+        ctx.moveTo(10, -5); ctx.lineTo(16, -1);
+        ctx.moveTo(16, -5); ctx.lineTo(10, -1);
+        ctx.stroke();
+      } else {
+        ctx.arc(14, -3, 4.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#0F172A";
+        ctx.fill();
+
+        // White Glisten
+        ctx.beginPath();
+        ctx.arc(15, -4.5, 1.5, 0, Math.PI * 2);
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill();
+      }
+
+      // Mouth (Chomp / Eat animation)
+      ctx.beginPath();
+      if (mouthOpen) {
+        ctx.arc(19, 4, 7, 0, Math.PI);
+        ctx.fillStyle = "#991B1B";
+        ctx.fill();
+      } else {
+        ctx.arc(18, 4, 3.5, 0, Math.PI * 0.9);
+        ctx.strokeStyle = "#0F172A";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+    }
+
+    /* Win / Game Over Overlay Handlers */
     function triggerLevelWin() {
       isPaused = true;
       const overlay = document.getElementById("overlay");
@@ -589,8 +884,8 @@
       isGameOver = true;
       const overlay = document.getElementById("overlay");
       document.getElementById("overlay-title").innerText = "Try Again! 💪";
-      document.getElementById("overlay-msg").innerText = "Don't give up, you can do it!";
-      document.getElementById("overlay-btn").innerText = "Restart Level 🔄";
+      document.getElementById("overlay-msg").innerText = "Dino bumped the wrong letter!";
+      document.getElementById("overlay-btn").innerText = "Retry Level 🔄";
       overlay.style.display = "flex";
     }
 
@@ -608,7 +903,7 @@
           currentLevel++;
           initLevel();
         } else {
-          alert("🎉 Congratulations! You finished all 50 levels!");
+          alert("🎉 YOU COMPLETED ALL 50 LEVELS!");
           currentLevel = 1;
           initLevel();
         }
@@ -616,9 +911,9 @@
       isPaused = false;
     }
 
-    // Start Game
+    // Start
     initLevel();
-    gameLoopInterval = setInterval(tick, 220); // Comfortable speed for kids
+    requestAnimationFrame(loop);
 
     // Register Service Worker for PWA
     if ("serviceWorker" in navigator) {
